@@ -1,0 +1,1108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JUST Cover Page Generator</title>
+
+  <style>
+    @page { size: A4; margin: 0; }
+
+    :root{
+      --green: #1f7a2e;
+      --light-green: #cfe7c6;
+      --border: #222;
+      --danger: #b42318;
+      --danger-bg: #fffbfa;
+      --danger-border: #fecdca;
+    }
+
+    *{ box-sizing: border-box; }
+
+    body{
+      margin: 0;
+      background: #f3f4f6;
+      color: #111;
+      font-family: "Times New Roman", serif;
+    }
+
+    body.exporting .courtesy{ display:none !important; }
+
+    header{
+      background: #fff;
+      padding: 14px 18px;
+      border-bottom: 1px solid #e5e7eb;
+      font-family: Arial, sans-serif;
+    }
+    header h1{
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .wrap{
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 16px;
+      padding: 16px;
+      max-width: 1300px;
+      margin: 0 auto;
+      align-items: start;
+    }
+
+    .panel{
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 14px;
+      position: sticky;
+      top: 16px;
+      font-family: Arial, sans-serif;
+    }
+    .panel h2{
+      margin: 0 0 10px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .alert{
+      display: none;
+      margin: 10px 0 12px;
+      padding: 10px 10px;
+      border: 1px solid var(--danger-border);
+      background: var(--danger-bg);
+      color: var(--danger);
+      border-radius: 10px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .alert strong{ font-weight: 800; }
+
+    .group{
+      margin: 12px 0;
+      padding: 10px;
+      border: 1px dashed #e5e7eb;
+      border-radius: 10px;
+    }
+    .group-title{
+      font-size: 11px;
+      font-weight: 800;
+      color: #374151;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    label{
+      display: block;
+      font-size: 12px;
+      margin: 8px 0 4px;
+      color: #111827;
+    }
+
+    input, textarea, select{
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+    }
+    textarea{ min-height: 70px; resize: vertical; }
+
+    input.invalid, textarea.invalid, select.invalid{
+      border-color: var(--danger) !important;
+      background: var(--danger-bg) !important;
+    }
+
+    .row2{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .actions{
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    button{
+      cursor: pointer;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-weight: 800;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+    }
+    .btn-print{ background: #111827; color: #fff; flex: 1; }
+    .btn-reset{ background: #e5e7eb; color: #111827; }
+
+    .btn-small{
+      background:#eef2ff;
+      color:#111827;
+      padding: 8px 10px;
+      font-size: 12px;
+      border-radius: 10px;
+      font-weight: 800;
+      border: 1px solid #e5e7eb;
+    }
+
+    .hint{
+      margin-top: 10px;
+      font-size: 12px;
+      color: #4b5563;
+      line-height: 1.45;
+    }
+
+    .btn-row{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .preview-area{ padding: 0; }
+
+    .page-shell{
+      width: 100%;
+      overflow: auto;
+      padding-bottom: 16px;
+    }
+
+    .page{
+      position: relative;
+      width: 210mm;
+      height: 297mm;
+      padding: 16mm 16mm 14mm 16mm;
+      background: #fff;
+      margin: 0 auto;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.08);
+      overflow: hidden;
+      transform-origin: top center;
+    }
+
+    .uni{
+      text-align: center;
+      color: var(--green);
+      font-size: 26pt;
+      font-weight: 700;
+      margin: 2mm 0 3mm;
+      line-height: 1.1;
+    }
+
+    .logo{
+      display: flex;
+      justify-content: center;
+      margin: 2mm 0 3mm;
+    }
+    .logo img{
+      width: 60mm;
+      height: 60mm;
+      object-fit: contain;
+    }
+
+    .dept{
+      text-align: center;
+      color: #2f5f2f;
+      font-size: 18pt;
+      font-weight: 700;
+      margin: 2mm 0 3mm;
+      line-height: 1.15;
+    }
+
+    .meta{
+      text-align: center;
+      font-size: 14pt;
+      line-height: 1.55;
+      margin-top: 1mm;
+    }
+    .meta b{ font-weight: 700; }
+
+    .report-box{
+      margin: 7mm auto 6mm;
+      border: 2px solid var(--border);
+      padding: 4mm 5mm;
+      width: 100%;
+      text-align: center;
+    }
+    .report-box .title{
+      font-size: 18pt;
+      font-weight: 700;
+      margin-bottom: 1mm;
+      line-height: 1.1;
+    }
+    .report-box .on{
+      font-size: 16pt;
+      font-weight: 700;
+      margin: 0 0 2mm;
+      line-height: 1.1;
+    }
+    .report-box .topic{
+      font-size: 14pt;
+      font-weight: 400;
+      line-height: 1.25;
+      white-space: pre-wrap;
+    }
+
+    .sub-table{
+      width: 100%;
+      margin: 4mm auto 0;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 13.5pt;
+    }
+    .sub-table th, .sub-table td{
+      border: 2px solid var(--border);
+      padding: 4mm 4mm;
+      vertical-align: top;
+    }
+    .sub-table th{
+      background-color: var(--light-green);
+      text-align: center;
+      font-size: 14.5pt;
+      font-weight: 700;
+    }
+    .line{ margin: 1.2mm 0; }
+
+    .date-center{
+      position: absolute;
+      left: 16mm;
+      right: 16mm;
+      bottom: 24mm;
+      text-align: center;
+      font-size: 15pt;
+      font-weight: 700;
+      color: var(--green);
+    }
+    .date-center span{
+      color: #111;
+      font-weight: 700;
+    }
+
+    .courtesy{
+      position: absolute;
+      left: 16mm;
+      right: 16mm;
+      bottom: 9mm;
+      text-align: center;
+      font-size: 10.5pt;
+      color: #444;
+      font-family: Arial, sans-serif;
+    }
+    .courtesy b{ font-weight: 700; }
+
+    #batchPreview{ display:none; }
+    .batch-title{
+      font-family: Arial, sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      color: #111827;
+      margin: 10px 0 8px;
+      text-align: center;
+    }
+
+    @media (max-width: 1100px){
+      .wrap{ grid-template-columns: 1fr; }
+      .panel{ position: static; }
+    }
+
+    @media print{
+      *{
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      header, .panel, .hint { display: none !important; }
+      .courtesy{ display: none !important; }
+      .batch-title{ display:none !important; }
+
+      body{ background: #fff; }
+      .wrap{ display: block; padding: 0; }
+      .page-shell{ overflow: visible; padding: 0; }
+
+      #batchPreview{ display:none !important; }
+      body.print-batch #singlePreview{ display:none !important; }
+      body.print-batch #batchPreview{ display:block !important; }
+
+      .page{
+        transform: none !important;
+        width: 210mm;
+        height: 297mm;
+        padding: 16mm 16mm 14mm 16mm;
+        margin: 0;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      #batchContainer .page{ break-after: page; }
+
+      .sub-table th{
+        background-color: #cfe7c6 !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>JUST Cover Page Generator</h1>
+  </header>
+
+  <div class="wrap">
+    <div class="panel">
+      <h2>Fill Information</h2>
+      <div class="alert" id="alertBox"></div>
+
+      <div class="group">
+        <div class="group-title">Quick Options</div>
+
+        <label>Template</label>
+        <select id="fTemplate">
+          <option value="">Select (optional)</option>
+          <option value="lab">Lab Report</option>
+          <option value="assignment">Assignment</option>
+          <option value="project">Project</option>
+        </select>
+
+        <div class="btn-row">
+          <button class="btn-small" type="button" id="btnSaveProfile">Save Profile</button>
+          <button class="btn-small" type="button" id="btnLoadProfile">Load Profile</button>
+          <button class="btn-small" type="button" id="btnClearProfile">Clear Profile</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-title">Batch Mode (Multiple Students)</div>
+
+        <label>Upload CSV</label>
+        <input id="fBatchFile" type="file" accept=".csv,text/csv" />
+
+        <label>Or paste CSV here</label>
+        <textarea id="fBatchCsv" placeholder="studentName,studentId,session,studentDeptName,studentUni&#10;A,1,2023-24,Mathematics,Jashore University of Science and Technology"></textarea>
+
+        <div class="btn-row">
+          <button class="btn-small" type="button" id="btnBatchGenerate">Generate Batch</button>
+          <button class="btn-small" type="button" id="btnBatchPrint">Print Batch</button>
+          <button class="btn-small" type="button" id="btnBatchPDF">Download Batch PDF</button>
+          <button class="btn-small" type="button" id="btnBatchClear">Clear Batch</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-title">University & Department</div>
+
+        <label>University Name</label>
+        <input id="fUniversity" data-name="University Name" type="text" value="Jashore University of Science and Technology" />
+
+        <label>Department Name (headline)</label>
+        <input id="fDeptName" data-name="Department Name" type="text" value="Mathematics" />
+
+        <label>Logo (optional upload)</label>
+        <input id="fLogo" type="file" accept="image/*" />
+
+        <label>Logo URL (optional)</label>
+        <input id="fLogoUrl" type="url" placeholder="https://example.com/logo.png" />
+
+        <div class="btn-row">
+          <button class="btn-small" type="button" id="btnJustLogo">JUST Logo</button>
+          <button class="btn-small" type="button" id="btnDeptLogo">Dept Logo</button>
+          <button class="btn-small" type="button" id="btnRemoveLogo">Remove</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-title">Course Info</div>
+
+        <label>Course Title</label>
+        <input id="fCourseTitle" data-name="Course Title" type="text" placeholder="Enter course title" />
+
+        <label>Course Code</label>
+        <input id="fCourseCode" data-name="Course Code" type="text" placeholder="Enter course code" />
+      </div>
+
+      <div class="group">
+        <div class="group-title">Report</div>
+
+        <div class="row2">
+          <div>
+            <label>Report Type</label>
+            <input id="fReportType" data-name="Report Type" type="text" placeholder="Lab Report / Assignment" />
+          </div>
+          <div>
+            <label>Line 2</label>
+            <input id="fOn" type="text" placeholder="On" />
+          </div>
+        </div>
+
+        <label>Report Topic</label>
+        <textarea id="fTopic" data-name="Report Topic" placeholder="Write your topic here..."></textarea>
+      </div>
+
+      <div class="group">
+        <div class="group-title">Submitted By (Left)</div>
+
+        <label>Student Name</label>
+        <input id="fStudentName" data-name="Student Name" type="text" placeholder="Student name" />
+
+        <label>Student ID</label>
+        <input id="fStudentId" data-name="Student ID" type="text" placeholder="Student ID" />
+
+        <label>Session</label>
+        <input id="fSession" data-name="Session" type="text" placeholder="e.g., 2021-22" />
+
+        <label>Department Name</label>
+        <input id="fStudentDeptName" data-name="Student Department" type="text" value="Mathematics" />
+
+        <label>University Name</label>
+        <input id="fStudentUni" data-name="Student University" type="text" value="Jashore University of Science and Technology" />
+      </div>
+
+      <div class="group">
+        <div class="group-title">Submitted To (Right)</div>
+
+        <label>Course Teacher</label>
+        <input id="fTeacherName" data-name="Course Teacher" type="text" placeholder="Teacher name" />
+
+        <label>Designation</label>
+        <input id="fTeacherDesig" data-name="Designation" type="text" placeholder="Lecturer / Assistant Professor" />
+
+        <label>Department</label>
+        <input id="fTeacherDept" data-name="Teacher Department" type="text" placeholder="Department of Mathematics" />
+
+        <label>University Name</label>
+        <input id="fTeacherUni" data-name="Teacher University" type="text" value="Jashore University of Science and Technology" />
+      </div>
+
+      <div class="group">
+        <div class="group-title">Date</div>
+
+        <label>Date of Experiment</label>
+        <input id="fDate" data-name="Date of Experiment" type="date" />
+      </div>
+
+      <div class="actions">
+        <button class="btn-print" id="btnPrint" type="button">Print / Save as PDF</button>
+        <button class="btn-reset" id="btnReset" type="button">Reset</button>
+      </div>
+
+      <div class="hint">
+        If the green table header doesn’t appear in PDF, enable “Background graphics” in the browser print settings.
+      </div>
+    </div>
+
+    <div class="preview-area">
+      <div class="page-shell" id="singlePreview">
+        <div class="page" id="page">
+          <div class="uni" id="pUniversity"></div>
+
+          <div class="logo">
+            <img id="pLogo" alt="Logo" crossorigin="anonymous" />
+          </div>
+
+          <div class="dept" id="pDeptHeadline"></div>
+
+          <div class="meta">
+            <div><b>Course Title:</b> <span id="pCourseTitle"></span></div>
+            <div><b>Course Code:</b> <span id="pCourseCode"></span></div>
+          </div>
+
+          <div class="report-box">
+            <div class="title" id="pReportType"></div>
+            <div class="on" id="pOn"></div>
+            <div class="topic" id="pTopic"></div>
+          </div>
+
+          <table class="sub-table">
+            <thead>
+              <tr>
+                <th>Submitted By</th>
+                <th>Submitted To</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="line"><b>Student Name:</b> <span id="pStudentName"></span></div>
+                  <div class="line"><b>Student ID:</b> <span id="pStudentId"></span></div>
+                  <div class="line"><b>Session:</b> <span id="pSession"></span></div>
+                  <div class="line" id="pStudentDeptLine"></div>
+                  <div class="line" id="pStudentUni"></div>
+                </td>
+                <td>
+                  <div class="line" id="pTeacherName"></div>
+                  <div class="line" id="pTeacherDesig"></div>
+                  <div class="line" id="pTeacherDept"></div>
+                  <div class="line" id="pTeacherUni"></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="date-center">
+            Date of Experiment: <span id="pDateText"></span>
+          </div>
+
+          <div class="courtesy">
+            <b>Courtesy:</b> Usama Ben Mahmud, Department of Mathematics
+          </div>
+        </div>
+      </div>
+
+      <div class="page-shell" id="batchPreview">
+        <div class="batch-title">Batch Preview</div>
+        <div id="batchContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const EMPTY = "\u00A0";
+    const DEFAULT_JUST_LOGO = "just-logo.png";
+    const DEFAULT_DEPT_LOGO = "dept-logo.png";
+    const PROFILE_KEY = "justCoverProfile_v3";
+
+    function showAlert(html){
+      const a = $("alertBox");
+      a.innerHTML = html;
+      a.style.display = "block";
+    }
+    function hideAlert(){
+      const a = $("alertBox");
+      a.innerHTML = "";
+      a.style.display = "none";
+    }
+    function setInvalid(el, on){
+      if(!el) return;
+      if(on) el.classList.add("invalid");
+      else el.classList.remove("invalid");
+    }
+    function clearInvalidOnInput(){
+      document.querySelectorAll("input, textarea, select").forEach(el => {
+        el.addEventListener("input", () => setInvalid(el, false));
+        el.addEventListener("change", () => setInvalid(el, false));
+      });
+    }
+
+    function bindText(inputId, previewId){
+      const input = $(inputId);
+      const preview = $(previewId);
+      const update = () => {
+        const val = (input.value || "").trim();
+        preview.textContent = val ? val : EMPTY;
+      };
+      input.addEventListener("input", update);
+      update();
+    }
+
+    function bindDepartmentOfLine(inputId, previewId, emptyFill = "__________"){
+      const input = $(inputId);
+      const preview = $(previewId);
+      const update = () => {
+        const val = (input.value || "").trim();
+        preview.textContent = "Department of " + (val ? val : emptyFill);
+      };
+      input.addEventListener("input", update);
+      update();
+    }
+
+    function formatDate(dateValue){
+      if(!dateValue) return "";
+      const [y, m, d] = dateValue.split("-");
+      return `${d}/${m}/${y}`;
+    }
+
+    function validate(ids){
+      hideAlert();
+      let first = null;
+      const missing = [];
+      ids.forEach(id => {
+        const el = $(id);
+        const val = (el.value || "").trim();
+        const ok = val.length > 0;
+        setInvalid(el, !ok);
+        if(!ok){
+          if(!first) first = el;
+          missing.push(el.dataset.name || id);
+        }
+      });
+      if(missing.length){
+        showAlert(`<strong>Please fill the required fields:</strong><br>${missing.join(", ")}`);
+        if(first){
+          first.scrollIntoView({ behavior: "smooth", block: "center" });
+          first.focus({ preventScroll: true });
+        }
+        return false;
+      }
+      return true;
+    }
+
+    const REQUIRED_SINGLE = [
+      "fUniversity","fDeptName",
+      "fCourseTitle","fCourseCode",
+      "fReportType","fTopic",
+      "fStudentName","fStudentId","fSession","fStudentDeptName","fStudentUni",
+      "fTeacherName","fTeacherDesig","fTeacherDept","fTeacherUni",
+      "fDate"
+    ];
+
+    const REQUIRED_BATCH_SHARED = [
+      "fUniversity","fDeptName",
+      "fCourseTitle","fCourseCode",
+      "fReportType","fTopic",
+      "fTeacherName","fTeacherDesig","fTeacherDept","fTeacherUni",
+      "fDate"
+    ];
+
+    bindText("fUniversity", "pUniversity");
+    bindDepartmentOfLine("fDeptName", "pDeptHeadline");
+
+    bindText("fCourseTitle", "pCourseTitle");
+    bindText("fCourseCode", "pCourseCode");
+
+    bindText("fReportType", "pReportType");
+    bindText("fOn", "pOn");
+    bindText("fTopic", "pTopic");
+
+    bindText("fStudentName", "pStudentName");
+    bindText("fStudentId", "pStudentId");
+    bindText("fSession", "pSession");
+    bindDepartmentOfLine("fStudentDeptName", "pStudentDeptLine");
+    bindText("fStudentUni", "pStudentUni");
+
+    bindText("fTeacherName", "pTeacherName");
+    bindText("fTeacherDesig", "pTeacherDesig");
+    bindText("fTeacherDept", "pTeacherDept");
+    bindText("fTeacherUni", "pTeacherUni");
+
+    const dateInput = $("fDate");
+    const dateText = $("pDateText");
+    const updateDate = () => dateText.textContent = formatDate(dateInput.value) || EMPTY;
+    dateInput.addEventListener("input", updateDate);
+    updateDate();
+
+    const logoImg = $("pLogo");
+    const logoFile = $("fLogo");
+    const logoUrlInput = $("fLogoUrl");
+
+    function setLogo(src){
+      if(!src){ logoImg.removeAttribute("src"); return; }
+      logoImg.src = src;
+    }
+
+    function useLogoFile(path){
+      setLogo(path);
+      logoImg.onerror = () => {
+        logoImg.onerror = null;
+        setLogo(DEFAULT_JUST_LOGO);
+      };
+    }
+
+    function useJustLogo(){ useLogoFile(DEFAULT_JUST_LOGO); }
+    function useDeptLogo(){ useLogoFile(DEFAULT_DEPT_LOGO); }
+
+    useJustLogo();
+
+    logoFile.addEventListener("change", (e) => {
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+      logoUrlInput.value = "";
+      const reader = new FileReader();
+      reader.onload = () => setLogo(reader.result);
+      reader.readAsDataURL(file);
+    });
+
+    logoUrlInput.addEventListener("input", () => {
+      const url = (logoUrlInput.value || "").trim();
+      if(!url){ useJustLogo(); return; }
+      logoFile.value = "";
+      setLogo(url);
+      logoImg.onerror = () => {
+        logoImg.onerror = null;
+        useJustLogo();
+      };
+    });
+
+    $("btnJustLogo").addEventListener("click", () => {
+      logoFile.value = "";
+      logoUrlInput.value = "";
+      useJustLogo();
+    });
+
+    $("btnDeptLogo").addEventListener("click", () => {
+      logoFile.value = "";
+      logoUrlInput.value = "";
+      useDeptLogo();
+    });
+
+    $("btnRemoveLogo").addEventListener("click", () => {
+      logoFile.value = "";
+      logoUrlInput.value = "";
+      setLogo("");
+    });
+
+    const template = $("fTemplate");
+    template.addEventListener("change", () => {
+      const v = template.value;
+      if(v === "lab"){ $("fReportType").value = "Lab Report"; $("fOn").value = "On"; }
+      else if(v === "assignment"){ $("fReportType").value = "Assignment"; $("fOn").value = "On"; }
+      else if(v === "project"){ $("fReportType").value = "Project Report"; $("fOn").value = "On"; }
+      $("fReportType").dispatchEvent(new Event("input"));
+      $("fOn").dispatchEvent(new Event("input"));
+    });
+
+    function getProfile(){
+      return {
+        studentName: $("fStudentName").value,
+        studentId: $("fStudentId").value,
+        session: $("fSession").value,
+        studentDeptName: $("fStudentDeptName").value,
+        studentUni: $("fStudentUni").value
+      };
+    }
+
+    function setProfile(p){
+      if(!p) return;
+      $("fStudentName").value = p.studentName || "";
+      $("fStudentId").value = p.studentId || "";
+      $("fSession").value = p.session || "";
+      $("fStudentDeptName").value = p.studentDeptName || "";
+      $("fStudentUni").value = p.studentUni || $("fStudentUni").value;
+
+      ["fStudentName","fStudentId","fSession","fStudentDeptName","fStudentUni"].forEach(id => {
+        $(id).dispatchEvent(new Event("input"));
+      });
+    }
+
+    function saveProfile(){
+      try{
+        localStorage.setItem(PROFILE_KEY, JSON.stringify(getProfile()));
+        showAlert("<strong>Saved:</strong> Student profile saved in this browser.");
+        setTimeout(hideAlert, 1800);
+      }catch(e){
+        showAlert("<strong>Error:</strong> Could not save profile in this browser.");
+      }
+    }
+
+    function loadProfile(silent=false){
+      try{
+        const raw = localStorage.getItem(PROFILE_KEY);
+        if(!raw){
+          if(!silent) showAlert("<strong>Not found:</strong> No saved profile in this browser.");
+          return;
+        }
+        setProfile(JSON.parse(raw));
+        if(!silent){
+          showAlert("<strong>Loaded:</strong> Student profile loaded.");
+          setTimeout(hideAlert, 1800);
+        }
+      }catch(e){
+        if(!silent) showAlert("<strong>Error:</strong> Could not load profile.");
+      }
+    }
+
+    function clearProfile(){
+      try{
+        localStorage.removeItem(PROFILE_KEY);
+        showAlert("<strong>Cleared:</strong> Saved profile removed.");
+        setTimeout(hideAlert, 1800);
+      }catch(e){
+        showAlert("<strong>Error:</strong> Could not clear profile.");
+      }
+    }
+
+    $("btnSaveProfile").addEventListener("click", saveProfile);
+    $("btnLoadProfile").addEventListener("click", () => loadProfile(false));
+    $("btnClearProfile").addEventListener("click", clearProfile);
+
+    function parseCSVLine(line){
+      const out = [];
+      let cur = "";
+      let inQuotes = false;
+      for(let i=0;i<line.length;i++){
+        const ch = line[i];
+        if(ch === '"'){
+          if(inQuotes && line[i+1] === '"'){ cur += '"'; i++; }
+          else inQuotes = !inQuotes;
+        } else if(ch === "," && !inQuotes){
+          out.push(cur);
+          cur = "";
+        } else cur += ch;
+      }
+      out.push(cur);
+      return out.map(s => s.trim());
+    }
+
+    function normalizeKey(k){
+      const t = (k || "").trim().toLowerCase().replace(/\s+/g,"");
+      const map = {
+        name: "studentName",
+        studentname: "studentName",
+        id: "studentId",
+        studentid: "studentId",
+        session: "session",
+        dept: "studentDeptName",
+        department: "studentDeptName",
+        studentdeptname: "studentDeptName",
+        uni: "studentUni",
+        university: "studentUni",
+        studentuni: "studentUni"
+      };
+      return map[t] || k;
+    }
+
+    function parseCSV(text){
+      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      if(!lines.length) return [];
+
+      const first = parseCSVLine(lines[0]);
+      const rawHeaders = first.map(h => normalizeKey(h));
+      const hasHeader = rawHeaders.some(h => ["studentName","studentId","session","studentDeptName","studentUni"].includes(h));
+
+      let headers, dataLines;
+      if(hasHeader){
+        headers = rawHeaders;
+        dataLines = lines.slice(1);
+      } else {
+        headers = ["studentName","studentId","session","studentDeptName","studentUni"];
+        dataLines = lines;
+      }
+
+      return dataLines.map(line => {
+        const cols = parseCSVLine(line);
+        const obj = {};
+        headers.forEach((h, i) => obj[h] = (cols[i] ?? "").trim());
+        return obj;
+      }).filter(r => Object.values(r).some(v => (v || "").trim() !== ""));
+    }
+
+    function waitForImages(container){
+      const imgs = Array.from(container.querySelectorAll("img"));
+      return Promise.all(imgs.map(img => {
+        if(img.complete) return Promise.resolve();
+        return new Promise(res => { img.onload = img.onerror = () => res(); });
+      }));
+    }
+
+    function setText(el, text){
+      el.textContent = (text && text.trim()) ? text : EMPTY;
+    }
+
+    function getSharedData(){
+      return {
+        university: $("fUniversity").value.trim(),
+        deptName: $("fDeptName").value.trim(),
+        courseTitle: $("fCourseTitle").value.trim(),
+        courseCode: $("fCourseCode").value.trim(),
+        reportType: $("fReportType").value.trim(),
+        onLine: $("fOn").value.trim(),
+        topic: $("fTopic").value.trim(),
+        teacherName: $("fTeacherName").value.trim(),
+        teacherDesig: $("fTeacherDesig").value.trim(),
+        teacherDept: $("fTeacherDept").value.trim(),
+        teacherUni: $("fTeacherUni").value.trim(),
+        dateText: formatDate($("fDate").value),
+        studentUniDefault: $("fStudentUni").value.trim(),
+        logoSrc: logoImg.getAttribute("src") || ""
+      };
+    }
+
+    function createBatchPage(shared, row){
+      const clone = $("page").cloneNode(true);
+      clone.removeAttribute("id");
+
+      setText(clone.querySelector("#pUniversity"), shared.university);
+      setText(clone.querySelector("#pDeptHeadline"), "Department of " + (shared.deptName ? shared.deptName : "__________"));
+
+      setText(clone.querySelector("#pCourseTitle"), shared.courseTitle);
+      setText(clone.querySelector("#pCourseCode"), shared.courseCode);
+
+      setText(clone.querySelector("#pReportType"), shared.reportType);
+      setText(clone.querySelector("#pOn"), shared.onLine);
+      setText(clone.querySelector("#pTopic"), shared.topic);
+
+      setText(clone.querySelector("#pStudentName"), (row.studentName || "").trim());
+      setText(clone.querySelector("#pStudentId"), (row.studentId || "").trim());
+      setText(clone.querySelector("#pSession"), (row.session || "").trim());
+      setText(clone.querySelector("#pStudentDeptLine"), "Department of " + ((row.studentDeptName || "").trim() || "__________"));
+      setText(clone.querySelector("#pStudentUni"), ((row.studentUni || "").trim() || shared.studentUniDefault));
+
+      setText(clone.querySelector("#pTeacherName"), shared.teacherName);
+      setText(clone.querySelector("#pTeacherDesig"), shared.teacherDesig);
+      setText(clone.querySelector("#pTeacherDept"), shared.teacherDept);
+      setText(clone.querySelector("#pTeacherUni"), shared.teacherUni);
+
+      setText(clone.querySelector("#pDateText"), shared.dateText);
+
+      const img = clone.querySelector("#pLogo");
+      img.setAttribute("crossorigin","anonymous");
+      if(shared.logoSrc) img.setAttribute("src", shared.logoSrc);
+      else img.removeAttribute("src");
+
+      return clone;
+    }
+
+    const batchPreview = $("batchPreview");
+    const batchContainer = $("batchContainer");
+
+    function clearBatch(){
+      batchContainer.innerHTML = "";
+      batchPreview.style.display = "none";
+      document.body.classList.remove("print-batch");
+      scalePreviews();
+    }
+
+    async function generateBatch(){
+      if(!validate(REQUIRED_BATCH_SHARED)) return;
+
+      const csvText = ($("fBatchCsv").value || "").trim();
+      if(!csvText){
+        showAlert("<strong>Batch CSV required:</strong> Upload a CSV or paste CSV text.");
+        return;
+      }
+
+      const rows = parseCSV(csvText);
+      if(!rows.length){
+        showAlert("<strong>No students found:</strong> Your CSV has no valid rows.");
+        return;
+      }
+
+      const shared = getSharedData();
+      const errors = [];
+      batchContainer.innerHTML = "";
+
+      rows.forEach((row, idx) => {
+        const n = (row.studentName || "").trim();
+        const i = (row.studentId || "").trim();
+        const s = (row.session || "").trim();
+        const d = (row.studentDeptName || "").trim();
+        if(!n || !i || !s || !d){
+          errors.push(`Row ${idx+1}: missing studentName / studentId / session / studentDeptName`);
+          return;
+        }
+        batchContainer.appendChild(createBatchPage(shared, row));
+      });
+
+      if(errors.length){
+        batchPreview.style.display = "none";
+        showAlert("<strong>Batch errors:</strong><br>" + errors.join("<br>"));
+        return;
+      }
+
+      batchPreview.style.display = "block";
+      hideAlert();
+      await waitForImages(batchContainer);
+      scalePreviews();
+      batchPreview.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function printBatch(){
+      if(!batchContainer.children.length){
+        showAlert("<strong>No batch pages:</strong> Click “Generate Batch” first.");
+        return;
+      }
+      hideAlert();
+      document.body.classList.add("print-batch");
+      window.print();
+      setTimeout(() => document.body.classList.remove("print-batch"), 500);
+    }
+
+    async function downloadBatchPDF(){
+      if(!batchContainer.children.length){
+        showAlert("<strong>No batch pages:</strong> Click “Generate Batch” first.");
+        return;
+      }
+
+      document.body.classList.add("exporting");
+      await waitForImages(batchContainer);
+      await (document.fonts ? document.fonts.ready : Promise.resolve());
+
+      try{
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "p", compress: true });
+
+        const pages = Array.from(batchContainer.querySelectorAll(".page"));
+        for(let idx=0; idx<pages.length; idx++){
+          const canvas = await html2canvas(pages[idx], {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: "#ffffff"
+          });
+          const imgData = canvas.toDataURL("image/jpeg", 0.95);
+          if(idx > 0) pdf.addPage("a4","p");
+          pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
+        }
+
+        pdf.save("JUST-Cover-Pages.pdf");
+      }catch(e){
+        showAlert("<strong>PDF export failed:</strong> Try Print Batch → Save as PDF instead.");
+      }finally{
+        document.body.classList.remove("exporting");
+      }
+    }
+
+    $("btnBatchGenerate").addEventListener("click", generateBatch);
+    $("btnBatchPrint").addEventListener("click", printBatch);
+    $("btnBatchPDF").addEventListener("click", downloadBatchPDF);
+    $("btnBatchClear").addEventListener("click", clearBatch);
+
+    $("fBatchFile").addEventListener("change", (e) => {
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = () => { $("fBatchCsv").value = reader.result || ""; };
+      reader.readAsText(file);
+    });
+
+    $("btnPrint").addEventListener("click", () => {
+      if(!validate(REQUIRED_SINGLE)) return;
+      hideAlert();
+      document.body.classList.remove("print-batch");
+      window.print();
+    });
+
+    $("btnReset").addEventListener("click", () => location.reload());
+
+    clearInvalidOnInput();
+
+    const singlePreview = $("singlePreview");
+    function scalePagesIn(container){
+      const pages = Array.from(container.querySelectorAll(".page"));
+      if(!pages.length) return;
+
+      pages.forEach(p => p.style.transform = "none");
+      const shellWidth = container.clientWidth;
+      const firstWidth = pages[0].getBoundingClientRect().width;
+      if(!firstWidth) return;
+
+      const scale = Math.min(1, shellWidth / firstWidth);
+      pages.forEach(p => {
+        p.style.transform = `scale(${scale})`;
+        p.style.marginLeft = "auto";
+        p.style.marginRight = "auto";
+      });
+    }
+
+    function scalePreviews(){
+      if (window.matchMedia && window.matchMedia("print").matches) return;
+      scalePagesIn(singlePreview);
+      if(batchPreview.style.display !== "none") scalePagesIn(batchPreview);
+    }
+
+    window.addEventListener("resize", scalePreviews);
+    window.addEventListener("load", () => {
+      scalePreviews();
+      loadProfile(true);
+      hideAlert();
+    });
+    window.addEventListener("afterprint", scalePreviews);
+  </script>
+</body>
+</html>
