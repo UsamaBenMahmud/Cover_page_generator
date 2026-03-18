@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>JUST Cover Page Generator</title>
 
   <style>
@@ -19,12 +19,15 @@
 
     *{ box-sizing: border-box; }
 
+    html{ -webkit-text-size-adjust: 100%; }
     body{
       margin: 0;
       background: #f3f4f6;
       color: #111;
       font-family: "Times New Roman", serif;
     }
+
+    button{ touch-action: manipulation; }
 
     body.exporting .courtesy{ display:none !important; }
 
@@ -102,14 +105,14 @@
 
     input, textarea, select{
       width: 100%;
-      padding: 8px 10px;
+      padding: 10px 10px;
       border: 1px solid #d1d5db;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 14px;
       outline: none;
       background: #fff;
     }
-    textarea{ min-height: 70px; resize: vertical; }
+    textarea{ min-height: 80px; resize: vertical; }
 
     input.invalid, textarea.invalid, select.invalid{
       border-color: var(--danger) !important;
@@ -200,8 +203,8 @@
       margin: 2mm 0 3mm;
     }
     .logo img{
-      width: 60mm;
-      height: 60mm;
+      width: 48mm;
+      height: 48mm;
       object-fit: contain;
     }
 
@@ -305,9 +308,47 @@
       text-align: center;
     }
 
+    .mobile-bar{
+      display: none;
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(255,255,255,.92);
+      border-top: 1px solid #e5e7eb;
+      backdrop-filter: blur(8px);
+      z-index: 50;
+    }
+    .mobile-bar .inner{
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      gap: 10px;
+    }
+    .mobile-bar button{
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .mobile-bar .form-btn{ background:#111827; color:#fff; }
+    .mobile-bar .prev-btn{ background:#e5e7eb; color:#111827; }
+
     @media (max-width: 1100px){
       .wrap{ grid-template-columns: 1fr; }
       .panel{ position: static; }
+    }
+
+    @media (pointer: coarse){
+      input, textarea, select{
+        font-size: 16px !important;
+      }
+    }
+
+    @media (max-width: 700px){
+      .wrap{ padding-bottom: 78px; }
+      .mobile-bar{ display:block; }
+      .page-shell{ overflow-x: hidden; }
     }
 
     @media print{
@@ -315,7 +356,7 @@
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
-      header, .panel, .hint { display: none !important; }
+      header, .panel, .hint, .mobile-bar { display: none !important; }
       .courtesy{ display: none !important; }
       .batch-title{ display:none !important; }
 
@@ -352,8 +393,10 @@
     <h1>JUST Cover Page Generator</h1>
   </header>
 
+  <div id="formTop"></div>
+
   <div class="wrap">
-    <div class="panel">
+    <div class="panel" id="formPanel">
       <h2>Fill Information</h2>
       <div class="alert" id="alertBox"></div>
 
@@ -490,11 +533,11 @@
       </div>
 
       <div class="hint">
-        If the green table header doesn’t appear in PDF, enable “Background graphics” in the browser print settings.
+        If the green table header doesn’t appear in PDF, enable “Background graphics” in print settings.
       </div>
     </div>
 
-    <div class="preview-area">
+    <div class="preview-area" id="previewTop">
       <div class="page-shell" id="singlePreview">
         <div class="page" id="page">
           <div class="uni" id="pUniversity"></div>
@@ -559,6 +602,13 @@
     </div>
   </div>
 
+  <div class="mobile-bar">
+    <div class="inner">
+      <button class="form-btn" type="button" id="btnGoForm">Form</button>
+      <button class="prev-btn" type="button" id="btnGoPreview">Preview</button>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -567,7 +617,7 @@
     const EMPTY = "\u00A0";
     const DEFAULT_JUST_LOGO = "just-logo.png";
     const DEFAULT_DEPT_LOGO = "dept-logo.png";
-    const PROFILE_KEY = "justCoverProfile_v3";
+    const PROFILE_KEY = "justCoverProfile_v4";
 
     function showAlert(html){
       const a = $("alertBox");
@@ -775,7 +825,6 @@
       $("fSession").value = p.session || "";
       $("fStudentDeptName").value = p.studentDeptName || "";
       $("fStudentUni").value = p.studentUni || $("fStudentUni").value;
-
       ["fStudentName","fStudentId","fSession","fStudentDeptName","fStudentUni"].forEach(id => {
         $(id).dispatchEvent(new Event("input"));
       });
@@ -785,7 +834,7 @@
       try{
         localStorage.setItem(PROFILE_KEY, JSON.stringify(getProfile()));
         showAlert("<strong>Saved:</strong> Student profile saved in this browser.");
-        setTimeout(hideAlert, 1800);
+        setTimeout(hideAlert, 1600);
       }catch(e){
         showAlert("<strong>Error:</strong> Could not save profile in this browser.");
       }
@@ -801,7 +850,7 @@
         setProfile(JSON.parse(raw));
         if(!silent){
           showAlert("<strong>Loaded:</strong> Student profile loaded.");
-          setTimeout(hideAlert, 1800);
+          setTimeout(hideAlert, 1600);
         }
       }catch(e){
         if(!silent) showAlert("<strong>Error:</strong> Could not load profile.");
@@ -812,7 +861,7 @@
       try{
         localStorage.removeItem(PROFILE_KEY);
         showAlert("<strong>Cleared:</strong> Saved profile removed.");
-        setTimeout(hideAlert, 1800);
+        setTimeout(hideAlert, 1600);
       }catch(e){
         showAlert("<strong>Error:</strong> Could not clear profile.");
       }
@@ -1042,7 +1091,7 @@
 
         pdf.save("JUST-Cover-Pages.pdf");
       }catch(e){
-        showAlert("<strong>PDF export failed:</strong> Try Print Batch → Save as PDF instead.");
+        showAlert("<strong>PDF export failed:</strong> Use Print Batch → Save as PDF.");
       }finally{
         document.body.classList.remove("exporting");
       }
@@ -1073,6 +1122,7 @@
     clearInvalidOnInput();
 
     const singlePreview = $("singlePreview");
+
     function scalePagesIn(container){
       const pages = Array.from(container.querySelectorAll(".page"));
       if(!pages.length) return;
@@ -1095,6 +1145,13 @@
       scalePagesIn(singlePreview);
       if(batchPreview.style.display !== "none") scalePagesIn(batchPreview);
     }
+
+    $("btnGoForm").addEventListener("click", () => {
+      $("formTop").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    $("btnGoPreview").addEventListener("click", () => {
+      $("previewTop").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
 
     window.addEventListener("resize", scalePreviews);
     window.addEventListener("load", () => {
