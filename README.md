@@ -23,12 +23,14 @@ It works fully in the browser (no backend). Students fill in required informatio
 
 ## Demo / Live Link
 
-- Live site: `YOUR_LIVE_LINK_HERE`
+- Live site: https://usamabenmahmud.github.io/Cover_page_generator/
 
 ## Project Structure
+
 
 ```txt
 .
 ├── index.html
 ├── just-logo.png
-└── dept-logo.png   (optional)
+└── dept-logo.png
+
